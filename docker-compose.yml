@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  mysql:
+  settlement-db:
     image: mysql:8.0
     container_name: settlement-db
     environment:
@@ -10,7 +8,41 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql
+      - settlement_data:/var/lib/mysql
+
+  streaming-db:
+    image: mysql:8.0
+    container_name: streaming-db
+    environment:
+      MYSQL_ROOT_PASSWORD: manager
+      MYSQL_DATABASE: streamingdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - streaming_data:/var/lib/mysql
+  
+  redis:
+    image: redis:7.0
+    container_name: streaming-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+
+  config-server:
+    image: openjdk:17-jdk-slim
+    container_name: config-server
+    volumes:
+      - ./settlement-configServer/build/libs/settlement-configServer-0.0.1-SNAPSHOT.jar:/app/app.jar
+    working_dir: /app
+    command: ["java", "-jar", "app.jar"]
+    ports:
+      - "9000:9000"
+
 
 volumes:
-  db_data:
+  settlement_data:
+  streaming_data:
+  redis_data:
