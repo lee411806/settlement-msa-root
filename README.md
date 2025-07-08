@@ -74,6 +74,13 @@
 
 ## 🏗 아키텍쳐
 
+전체 흐름)
+
+
+config 흐름)
+
+<img width="593" alt="설계도 이미지" src="https://github.com/user-attachments/assets/8c6e7843-00df-4c9f-a7b3-20557ebc17af" />
+
 <br>
 
  
