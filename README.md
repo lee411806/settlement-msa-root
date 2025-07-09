@@ -76,6 +76,9 @@
 
 전체 흐름)
 
+<img width="593" alt="설계도 이미지"  src="https://github.com/user-attachments/assets/f7495088-b122-41d2-b543-07aea65b3d29" />
+
+
 
 config 흐름)
 
@@ -85,6 +88,8 @@ config 흐름)
 
  
 ## :bookmark: API 문서
+
+[![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)](https://documenter.getpostman.com/view/30989395/2sB34eJ2HM)[![API Documentation](https://img.shields.io/badge/API%20Documentation-6B7280?style=for-the-badge&logo=book&logoColor=white)](https://documenter.getpostman.com/view/30989395/2sB34eJ2HM)
 
 
 <br>
