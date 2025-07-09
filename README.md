@@ -95,8 +95,16 @@ config 흐름)
 <br>
 
 
-## 각 서버 링크
+## 🌐 서버별 API 문서 링크
 
+| 서비스명               | 문서 링크 |
+|------------------------|-----------|
+| 🌉 Gateway Service      | [GitHub Repo](https://github.com/lee411806/settlement-SCG) |
+| 🔎 Eureka Service       | [GitHub Repo](https://github.com/lee411806/settlement-eurekaServer) |
+| ⚙️ Config Server        | [GitHub Repo](https://github.com/lee411806/settlement-configServer) |
+| 🗂️ Config Repo (GitHub) | [GitHub Repo](https://github.com/lee411806/settlement-config-repo) |
+| 📥 Streaming Service    | [GitHub Repo](https://github.com/lee411806/settlement-streaming-msa) |
+| 📤 Statistics Service   | [GitHub Repo](https://github.com/lee411806/settlement-statistics-msa) |
 
 
 
