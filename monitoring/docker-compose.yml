@@ -1,0 +1,81 @@
+networks:
+  msa-network:
+    external: true  # 외부에서 이미 정의된 Docker 네트워크(multi-container용) 사용
+
+services:
+  prometheus:
+    image: prom/prometheus:latest 
+    container_name: prometheus
+    volumes:
+      - /c/Users/user/Desktop/services/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro  # Prometheus 설정 파일을 마운트 (읽기 전용)
+      - prometheus_data:/prometheus  # Prometheus 내부 데이터 저장용 볼륨
+    ports:
+      - "9090:9090"  
+    networks:
+      - msa-network  
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - msa-network
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - msa-network
+    pid: "host"
+    volumes:
+      - /proc:/host/proc:ro     # 호스트 프로세스 정보 마운트
+      - /sys:/host/sys:ro       # 시스템 정보 마운트
+      - /:/rootfs:ro            # 루트 파일 시스템 정보 마운트
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+
+  mysqld-exporter-3306:
+    image: prom/mysqld-exporter:v0.14.0  # MySQL Exporter 이미지 (구버전 안정성 ↑)
+    container_name: mysqld-exporter-3306
+    environment:
+      - DATA_SOURCE_NAME=exporter:1234@(streaming-db:3306)/
+    command:  # 수집할 메트릭 명시적으로 지정
+      - "--collect.global_status"                # SHOW GLOBAL STATUS
+      - "--collect.global_variables"             # SHOW GLOBAL VARIABLES
+      - "--collect.slave_status"                 # 복제 상태 정보
+      - "--collect.info_schema.innodb_cmp"       # InnoDB 압축 상태
+      - "--collect.info_schema.innodb_cmpmem"    # InnoDB 압축 메모리 사용
+      - "--collect.info_schema.query_response_time"  # 쿼리 응답 시간
+    ports:
+      - "9104:9104" 
+    networks:
+      - msa-network
+
+  mysqld-exporter-3307:
+    image: prom/mysqld-exporter:v0.14.0
+    container_name: mysqld-exporter-3307
+    environment:
+      - DATA_SOURCE_NAME=exporter:1234@(settlement-db:3306)/
+
+    command:
+      - "--collect.global_status"
+      - "--collect.global_variables"
+      - "--collect.slave_status"
+      - "--collect.info_schema.innodb_cmp"
+      - "--collect.info_schema.innodb_cmpmem"
+      - "--collect.info_schema.query_response_time"
+    ports:
+      - "9105:9104"
+    networks:
+      - msa-network
+
+volumes:
+  prometheus_data:
+  grafana_data:

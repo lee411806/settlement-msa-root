@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s   # 15초마다 metric 수집
+  evaluation_interval: 15s # 규칙(알람) 평가 주기
+
+scrape_configs:
+  - job_name: 'settlement-statistics'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['settlement-statistics:8010']
+
+  - job_name: 'streaming'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['streaming:8020']
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  - job_name: 'mysqld-exporter'
+    static_configs:
+      - targets: 
+          - 'mysqld-exporter-3306:9104'
+          - 'mysqld-exporter-3307:9104'
+
+# Alertmanager 설정 - 추후 알림 연동 시 사용 예정
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            # - alertmanager:9093
+
+# 경고 규칙 - 필요 시 활성화
+rule_files:
+  # - "first_rules.yml"
