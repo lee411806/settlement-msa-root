@@ -1,3 +1,9 @@
+version: '3.8'
+
+networks:
+  msa-network:
+    external: true
+
 services:
   settlement-db:
     image: mysql:8.0
@@ -9,6 +15,8 @@ services:
       - "3306:3306"
     volumes:
       - settlement_data:/var/lib/mysql
+    networks:
+      - msa-network
 
   streaming-db:
     image: mysql:8.0
@@ -20,7 +28,9 @@ services:
       - "3307:3306"
     volumes:
       - streaming_data:/var/lib/mysql
-  
+    networks:
+      - msa-network
+
   redis:
     image: redis:7.0
     container_name: streaming-redis
@@ -28,7 +38,8 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-
+    networks:
+      - msa-network
 
   config-server:
     image: openjdk:17-jdk-slim
@@ -39,6 +50,8 @@ services:
     command: ["java", "-jar", "app.jar"]
     ports:
       - "9000:9000"
+    networks:
+      - msa-network
 
   eureka-server:
     image: openjdk:17-jdk-slim
@@ -49,7 +62,8 @@ services:
     command: ["java", "-jar", "app.jar"]
     ports:
       - "8761:8761"
-
+    networks:
+      - msa-network
 
   gateway:
     image: openjdk:17-jdk-slim
@@ -67,6 +81,8 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_APPLICATION_NAME: settlementSCG
       SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000
+    networks:
+      - msa-network
 
   settlement-statistics:
     image: openjdk:17-jdk-slim
@@ -84,8 +100,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_APPLICATION_NAME: settlement-statistics
-      SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000 
-  
+      SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000
+    networks:
+      - msa-network
 
   streaming:
     image: openjdk:17-jdk-slim
@@ -105,7 +122,9 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_APPLICATION_NAME: streaming
       SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000
-  
+    networks:
+      - msa-network
+
 volumes:
   settlement_data:
   streaming_data:
