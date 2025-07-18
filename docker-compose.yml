@@ -84,9 +84,10 @@ services:
     networks:
       - msa-network
 
-  settlement-statistics:
+  # Settlement Statistics 서비스 - 첫 번째 인스턴스
+  settlement-statistics-1:
     image: openjdk:17-jdk-slim
-    container_name: settlement-statistics
+    container_name: settlement-statistics-1
     volumes:
       - ./settlement-statistics-msa/build/libs/settlement-statistics-msa-0.0.1-SNAPSHOT.jar:/app/app.jar
     working_dir: /app
@@ -101,12 +102,36 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_APPLICATION_NAME: settlement-statistics
       SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000
+      EUREKA_INSTANCE_INSTANCE_ID: settlement-statistics-1
     networks:
       - msa-network
 
-  streaming:
+  # Settlement Statistics 서비스 - 두 번째 인스턴스
+  settlement-statistics-2:
     image: openjdk:17-jdk-slim
-    container_name: streaming
+    container_name: settlement-statistics-2
+    volumes:
+      - ./settlement-statistics-msa/build/libs/settlement-statistics-msa-0.0.1-SNAPSHOT.jar:/app/app.jar
+    working_dir: /app
+    command: ["java", "-jar", "app.jar"]
+    ports:
+      - "8011:8010"
+    depends_on:
+      - config-server
+      - eureka-server
+      - settlement-db
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_APPLICATION_NAME: settlement-statistics
+      SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000
+      EUREKA_INSTANCE_INSTANCE_ID: settlement-statistics-2
+    networks:
+      - msa-network
+
+  # Streaming 서비스 - 첫 번째 인스턴스
+  streaming-1:
+    image: openjdk:17-jdk-slim
+    container_name: streaming-1
     volumes:
       - ./streaming-msa/build/libs/streaming-msa-0.0.1-SNAPSHOT.jar:/app/app.jar
     working_dir: /app
@@ -122,6 +147,30 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_APPLICATION_NAME: streaming
       SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000
+      EUREKA_INSTANCE_INSTANCE_ID: streaming-1
+    networks:
+      - msa-network
+
+  # Streaming 서비스 - 두 번째 인스턴스
+  streaming-2:
+    image: openjdk:17-jdk-slim
+    container_name: streaming-2
+    volumes:
+      - ./streaming-msa/build/libs/streaming-msa-0.0.1-SNAPSHOT.jar:/app/app.jar
+    working_dir: /app
+    command: ["java", "-jar", "app.jar"]
+    ports:
+      - "8021:8020"
+    depends_on:
+      - config-server
+      - eureka-server
+      - streaming-db
+      - redis
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_APPLICATION_NAME: streaming
+      SPRING_CONFIG_IMPORT: optional:configserver:http://admin:1234@config-server:9000
+      EUREKA_INSTANCE_INSTANCE_ID: streaming-2
     networks:
       - msa-network
 
